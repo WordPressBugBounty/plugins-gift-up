@@ -3,7 +3,7 @@
  * Plugin Name: Gift Up
  * Plugin URI: https://www.giftup.com/
  * Description: The simplest way to sell your own gift cards/certificates/vouchers from inside your WordPress website easily with no monthly fee. If you also use WooCommerce, the gift cards are redeemable in your website shopping cart.
- * Version: 2.26
+ * Version: 2.26.1
  * Author: Gift Up
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-define( 'GIFTUP_VERSION', '2.26' );
+define( 'GIFTUP_VERSION', '2.26.1' );
 define( 'GIFTUP_SESSION_KEY', 'giftup_gift_card_code' );
 define( 'GIFTUP_ORDER_META_CODE_KEY', '_giftup_code' );
 define( 'GIFTUP_ORDER_META_REQUESTED_BALANCE_KEY', '_giftup_requested_balance' );

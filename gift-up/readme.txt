@@ -5,7 +5,7 @@ Tags: gift cards, gift certificates, gift vouchers, gift certificate, voucher, w
 Requires at least: 3.0.1
 Requires PHP: 5.6
 Tested up to: 6.6.0
-Stable tag: 2.26
+Stable tag: 2.26.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Plugin URI: https://en-gb.wordpress.org/plugins/gift-up/
@@ -27,7 +27,7 @@ Once a customer purchases a gift card, we'll handle everything, from processing 
 
 It's a smooth experience for your customers to buy gift cards 24/7 directly from your website and social media platform, with your branding. They can pay with debit or credit cards, or other payment methods like Apple Pay and Google Pay. 
 
-When a customer is ready to redeem their gift card, you can process the payment in-person using our mobile/web app: https://help.giftup.com/article/21-how-to-validate-accept-redeem-gift-cards-in-person, or if you use WooCommerce, directly in your online shopping cart.
+When a customer is ready to redeem their gift card, you can process the payment in-person using our [mobile/web app](https://help.giftup.com/article/21-how-to-validate-accept-redeem-gift-cards-in-person), or if you use WooCommerce, directly in your online shopping cart.
 
 
 = What does Gift Up do? =
@@ -65,10 +65,9 @@ We have a huge [knowledge base on our website](https://help.giftup.com/), check 
 
 No monthly or setup fees. We charge a fee of 3.49% when a gift card is bought (but you can opt for your customers to pay this if you prefer).
  
- - No setup or hidden costs
+ - No setup costs, or fixed monthly costs
  - Pay only if you sell a gift card
- - Gift Up system is totally free to use
- - You get paid on a rolling 2-day basis
+ - You get paid immediately, and in full, for all sales
  
 = How do my customers pay for my gift cards? =
 
@@ -115,7 +114,7 @@ You can also take payment from your customers in 135+ different currencies. [Vie
  
 = How and when do I get paid? =
 
-You get the gift card revenue (less any payment processing fees and our fee) immediately. We do not hold on to any funds. You can get the money into your designated bank account in 1-2 working days. 
+You get the gift card revenue (less you chosen payment gateway's processing fees and our fee) immediately. We do not hold on to any funds. You can get the money into your designated bank account in 1-2 working days. 
  
 = What can I sell in the gift cards/certificates? =
 
@@ -156,6 +155,9 @@ Please note, that the new (and crucially experimental) feature named "WooCommerc
 7. Clear, accurate reporting that's available to export
 
 == Changelog ==
+
+= 2.26.1 =
+* Readme update
 
 = 2.26 =
 * WP 6.6.0 & WC 9.1.2 compatibility
