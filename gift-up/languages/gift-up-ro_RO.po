@@ -8,33 +8,33 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2023-10-02 09:47+0000\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2025-05-28 13:25+0000\n"
+"Last-Translator: Lee Tracey\n"
 "Language-Team: Romanian\n"
 "Language: ro_RO\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 :(((n%100>19)||(( n%100==0)&&(n!"
 "=0)))? 2 : 1));\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.4.0; wp-5.4.2"
+"X-Loco-Version: 2.8.0; wp-6.8.1; php-7.4.30"
 
-#: view/giftup-cart.php:93
+#: view/giftup-cart.php:92 blocks/src/apply-block/frontend.js:92
 msgid "Apply"
-msgstr "aplica"
+msgstr "Aplica"
 
-#: view/giftup-cart.php:85 view/giftup-cart.php:92
+#: view/giftup-cart.php:76 view/giftup-cart.php:91
 msgid "Apply gift card"
 msgstr "Aplicați card cadou"
 
-#: view/giftup-cart.php:78
-msgid "Balance"
-msgstr "Echilibru"
+#: view/giftup-cart.php:62 blocks/src/apply-block/frontend.js:165
+msgid "Available balance"
+msgstr "Sold disponibil"
 
-#: includes/giftup-woocommerce-hooks.php:222 view/giftup-cart.php:60
-#: view/giftup-cart.php:72
+#: includes/class-giftup-woocommerce-hooks.php:388 view/giftup-cart.php:46
+#: view/giftup-cart.php:58 blocks/src/apply-block/frontend.js:152
 msgid "Gift card"
 msgstr "Card cadou"
 
-#: view/giftup-cart.php:45
+#: view/giftup-cart.php:30
 msgid ""
 "Gift card cannot be used as it is a unit-backed, not a currency-backed gift "
 "card"
@@ -42,33 +42,38 @@ msgstr ""
 "Cardul cadou nu poate fi utilizat, deoarece este un card cadou susținut de "
 "unități, nu un card cadou susținut în valută"
 
-#: view/giftup-cart.php:89
+#: view/giftup-cart.php:85 blocks/src/apply-block/frontend.js:112
 msgid "Gift card code"
 msgstr "Cod card cadou"
 
-#: view/giftup-cart.php:41
-msgid "Gift card has expired"
-msgstr "Cardul cadou a expirat"
-
-#: view/giftup-cart.php:49
+#: view/giftup-cart.php:34
 msgid "Gift card has no remaining balance"
 msgstr "Cardul cadou nu mai are soldul rămas"
 
-#: view/giftup-cart.php:56
+#: view/giftup-cart.php:26
+msgid "Gift card is no longer valid"
+msgstr "Cardul cadou nu mai este valabil"
+
+#: view/giftup-cart.php:42 blocks/src/apply-block/frontend.js:42
 msgid "Gift card not found"
 msgstr "Cardul cadou nu a fost găsit"
 
 #. Name of the plugin
 #. Author of the plugin
-msgid "Gift Up!"
-msgstr "Cadou sus!"
+#| msgid "Gift Up!"
+msgid "Gift Up"
+msgstr "Gift Up"
+
+#: blocks/src/apply-block/editor.js:21 blocks/src/apply-block/frontend.js:102
+msgid "Have a gift card?"
+msgstr "Ai un card cadou?"
 
 #. URI of the plugin
 #. Author URI of the plugin
 msgid "https://www.giftup.com/"
 msgstr "https://www.giftup.com/"
 
-#: view/giftup-cart.php:76
+#: view/giftup-cart.php:69
 #| msgid "remove"
 msgid "Remove"
 msgstr "Elimina"
@@ -76,9 +81,10 @@ msgstr "Elimina"
 #. Description of the plugin
 msgid ""
 "The simplest way to sell your own gift cards/certificates/vouchers from "
-"inside your WordPress website easily with no monthly fee. Redeemable in your "
-"WooCommerce shopping cart."
+"inside your WordPress website easily with no monthly fee. If you also use "
+"WooCommerce, the gift cards are redeemable in your website shopping cart."
 msgstr ""
-"Cea mai simplă modalitate de a vinde carduri / certificate / vouchere cadou "
-"din interiorul site-ului dvs. WordPress cu ușurință, fără taxe lunare. "
-"Răscumpărați în coșul de cumpărături WooCommerce."
+"Cea mai simplă modalitate de a vinde propriile carduri "
+"cadou/certificate/vouchere din interiorul site-ului tău WordPress cu "
+"ușurință, fără taxă lunară. Dacă folosești și WooCommerce, cardurile cadou "
+"pot fi valorificate în coșul de cumpărături al site-ului tău."

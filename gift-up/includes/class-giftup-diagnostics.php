@@ -1,60 +1,38 @@
 <?php
 
-class giftup_curl_test_response {
-    public $can_access_api = false;
-    public $can_access_example_com = false;
-    public $tls_1_2_enabled = false;
-    public $tls_1_2_response_body = "";
-    public $code = 0;
-    public $body = "";
-    public $renderable_body = "";
-    public $api_key = "";
-
-    function __construct( $can_access_api, $can_access_example_com, $tls_1_2_enabled, $tls_1_2_response_body, $api_response, $api_key ) {
-        $this->code = $api_response->code;
-        $this->body = $api_response->body;
-        $this->renderable_body = $api_response->renderable_body;
-        $this->api_key = $api_key;
-
-        $this->can_access_api = $can_access_api;
-        $this->can_access_example_com = $can_access_example_com;
-        $this->tls_1_2_enabled = $tls_1_2_enabled;
-        $this->tls_1_2_response_body = $tls_1_2_response_body;
-    }
-}
-
-class giftup_diagnostics {
+class GiftUp_Diagnostics {
     // Diagnostics output
-    public static $diagnostics = "";
+    private static $diagnostics = "";
 
-    public static function new_group() {
+    public function new_group() {
         self::$diagnostics .= "<HR size=1 color=red style='margin: 2rem 0; padding: 0'>";
     }
 
-    public static function append( $debug_msg ) {
+    public function append( $debug_msg ) {
         self::$diagnostics .= "<div>" . $debug_msg . "</div>";
     }
 
     public static function render(){
-        $debug = giftup_options::get_woocommerce_diagnostics_mode();
+        $debug = GiftUp()->options->get_woocommerce_diagnostics_mode();
         
         global $wp_version;
     
         if ( !wp_doing_ajax() && $debug ) {
             echo "<div style='border: 5px solid red; color: red; padding: 2rem; background-color: rgba(255, 0, 0, 0.2);'>";
-            echo " <h6 style='margin: 0 0 1rem 0; padding: 0;'>Gift Up! diagnostics</h6>";
-            echo "Gift Up! plugin version: " . GIFTUP_VERSION . "<BR>";
+            echo " <h6 style='margin: 0 0 1rem 0; padding: 0;'>Gift Up diagnostics</h6>";
+            echo "Gift Up plugin version: " . GIFTUP_VERSION . "<BR>";
             echo "WordPress version: " . $wp_version . "<BR>";
             echo "PHP version: " . phpversion() . "<BR>";
 
-            $wc_version = self::woocommerce_installed_version();
+            $wc_version = GiftUp()->diagnostics->woocommerce_installed_version();
             if ($wc_version !== null) {
                 echo "WooCommerce version: " . $wc_version . "<BR>";
 
-                if (giftup_options::get_woocommerce_enabled() == true) {
+                if (GiftUp()->options->get_woocommerce_enabled() == true) {
                     echo "WooCommerce integration enabled<br>";
-                    echo "Apply to shipping: " . (giftup_options::get_woocommerce_apply_to_shipping() ? "true" : "false") . "<br>";
-                    echo "Apply to taxes: " . (giftup_options::get_woocommerce_apply_to_taxes() ? "true" : "false") . "<br>";
+                    echo "Apply to shipping: " . (GiftUp()->options->get_woocommerce_apply_to_shipping() ? "true" : "false") . "<br>";
+                    echo "Apply to taxes: " . (GiftUp()->options->get_woocommerce_apply_to_taxes() ? "true" : "false") . "<br>";
+                    echo "Gift card applied: " . (WC()->session->get( GIFTUP_ACCEPTED_GIFTCARD_CODE )) . "<br>";
                 }
             }
 
@@ -63,7 +41,7 @@ class giftup_diagnostics {
         }
     }
 
-    public static function woocommerce_installed_version() {
+    public function woocommerce_installed_version() {
         $version = null;
 
         try {
@@ -72,7 +50,7 @@ class giftup_diagnostics {
             } else if ( defined( 'WOOCOMMERCE_VERSION' ) ) {
                 $version = WOOCOMMERCE_VERSION;
             } else {
-                $version = self::get_woo_version_number();
+                $version = GiftUp()->diagnostics->get_woo_version_number();
             }
 
             return $version;
@@ -83,7 +61,7 @@ class giftup_diagnostics {
         return null;
     }
 
-    public static function is_woocommerce_activated() {
+    public function is_woocommerce_activated() {
         try {
             if ( file_exists ( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
                 return is_plugin_active( 'woocommerce/woocommerce.php' );
@@ -95,7 +73,7 @@ class giftup_diagnostics {
         return true; // assumed active
     }
 
-    private static function get_woo_version_number() {
+    private function get_woo_version_number() {
         try {
             if ( file_exists ( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
                 $plugin_data = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', array( 'Version' => 'Version' ) );
@@ -124,19 +102,19 @@ class giftup_diagnostics {
         return null;
     }
 
-    public static function get_plugins_list() {
+    public function get_plugins_list() {
         try {
             $format = "<div>{{Title}} by {{Author}} (version: {{Version}})</div>";
             $cache = 5;
             $by_author = 'false';
         
-            $plugins = self::get_plugin_list_data( $cache );
+            $plugins = $this->get_plugin_list_data( $cache );
         
             // Extract each plugin and format the output.
             $output = '';
             foreach ( $plugins as $plugin_file => $plugin_data ) {
                 if ( is_plugin_active( $plugin_file ) ) {
-                    $output .= self::format_plugin_list( $plugin_data, $format );
+                    $output .= $this->format_plugin_list( $plugin_data, $format );
                 }
             }
         
@@ -146,7 +124,7 @@ class giftup_diagnostics {
         }
     }
 
-    private static function get_plugin_list_data( $cache ) {
+    private function get_plugin_list_data( $cache ) {
         // Attempt to get plugin list from cache.
         if ( ! $cache ) {
             $cache = 'no';
@@ -172,7 +150,7 @@ class giftup_diagnostics {
         return $plugins;
     }
 
-    private static function format_plugin_list( $plugin_data, $format ) {
+    private function format_plugin_list( $plugin_data, $format ) {
 
         // Allowed tag.
         $plugins_allowedtags = array(
@@ -195,12 +173,12 @@ class giftup_diagnostics {
         $plugin_data['Author']    = wp_kses( $plugin_data['Author'], $plugins_allowedtags );
     
         // Replace the tags.
-        $format = self::replace_plugin_list_tags( $plugin_data, $format );
+        $format = $this->replace_plugin_list_tags( $plugin_data, $format );
     
         return $format;
     }
 
-    private static function replace_plugin_list_tags( $plugin_data, $format ) {
+    private function replace_plugin_list_tags( $plugin_data, $format ) {
         $format = strtr(
             $format,
             array(
@@ -228,12 +206,15 @@ class giftup_diagnostics {
         return $format;
     }
 
-    public static function test_curl( $api_key ) {
+    public function test_curl( $api_key ) {
         // Let's test the authenticated Gift Up! Ping endpoint
-        $api_response = giftup_api::invoke( '/ping', 'GET', null, $api_key );
+        $api_response = GiftUp()->api->invoke( '/ping', 'GET', null, $api_key );
 
         if ( $api_response->success ) {
-            return new giftup_curl_test_response( true, true, true, '', $api_response, $api_key );
+            return array(
+                'message' => 'Something odd is going on. Your API key works, but is not returning the correct data when we query Gift Up\'s API to get your account details.',
+                'status' => 'error'
+            );
         }
 
         $args = array(
@@ -271,56 +252,56 @@ class giftup_diagnostics {
         $example_response_success = $example_response_code >= 200 && $example_response_code < 300;
 
         // Let's also test the anonymous Gift Up! Ping endpoint
-        $ping_response = giftup_api::invoke( '/ping', 'HEAD' );
+        $ping_response = GiftUp()->api->invoke( '/ping', 'HEAD' );
 
-        $result = new giftup_curl_test_response( $ping_response->success, $example_response_success, $tls_1_2_enabled, $tls_1_2_response_body, $api_response, $api_key );
-
-        if ( $result->can_access_api ) {
+        if ( $ping_response->success ) {
             $message = 'The API key you have entered does not work, please enter a valid Gift Up! API key.';
             $message = $message . '<br>--';
             $message = $message . '<br>Accessing: https://api.giftup.app/ping';
-            $message = $message . '<br>With API key: "<span style="word-break: break-all">' . $result->api_key . '</span>"';
-            $message = $message . '<br>Response code: ' . $result->code;
+            $message = $message . '<br>With API key: "<span style="word-break: break-all">' . $api_key . '</span>"';
+            $message = $message . '<br>Response code: ' . $api_response->code;
 
-            if ( $result->renderable_body ) {
-                $message = $message . '<br>Response body: ' . $result->renderable_body;
+            if ( $api_response->renderable_body ) {
+                $message = $message . '<br>Response body: ' . $api_response->renderable_body;
             }
+
+            $message = $message . $this->add_diagnostics( $tls_1_2_response_body );
 
             return array(
                 'message' => $message,
                 'status' => 'error'
             );
         }
-        else if ( ! $result->tls_1_2_enabled ) {
+        else if ( ! $tls_1_2_enabled ) {
             $message = 'We cannot access the Gift Up! API to validate your API key because it appears that your server is incapable of making outbound cURL requests using TLS 1.2. ';
             $message = $message . '<br>Please upgrading your PHP to version 5.5.19 or higher and cURL version 7.34.0 or higher/OpenSSL @ 1.0.1 or higher. ';
             $message = $message . '<br><br>There is a great plugin for testing your WordPress installation\'s capability here: <a href="https://wordpress.org/plugins/tls-1-2-compatibility-test/">https://wordpress.org/plugins/tls-1-2-compatibility-test/</a>';
             $message = $message . '<br>--';
             $message = $message . '<br>Accessing: https://api.giftup.app/';
-            $message = $message . '<br>Response code: ' . $result->code;
+            $message = $message . '<br>Response code: ' . $api_response->code;
 
-            if ( $result->renderable_body ) {
-                $message = $message . '<br>Response body: ' . $result->renderable_body;
+            if ( $api_response->renderable_body ) {
+                $message = $message . '<br>Response body: ' . $api_response->renderable_body;
             }
 
-            $message = $message . self::add_diagnostics( $result );
+            $message = $message . $this->add_diagnostics( $tls_1_2_response_body );
 
             return array(
                 'message' => $message,
                 'status' => 'error'
             );
         }
-        else if ( $result->can_access_example_com ) {
+        else if ( $example_response_success ) {
             $message = 'We cannot access the Gift Up! API at the moment to validate your API key, please try again in a few moments';
             $message = $message . '<br>--';
             $message = $message . '<br>Accessing: https://api.giftup.app/';
-            $message = $message . '<br>Response code: ' . $result->code;
+            $message = $message . '<br>Response code: ' . $api_response->code;
 
-            if ( $result->renderable_body ) {
-                $message = $message . '<br>Response body: ' . $result->renderable_body;
+            if ( $api_response->renderable_body ) {
+                $message = $message . '<br>Response body: ' . $api_response->renderable_body;
             }
 
-            $message = $message . self::add_diagnostics( $result );
+            $message = $message . $this->add_diagnostics( $tls_1_2_response_body );
 
             return array(
                 'message' => $message,
@@ -334,18 +315,40 @@ class giftup_diagnostics {
             $message = $message . '<br>Please review any WordPress security plugins and ensure they are configured to allow outbound cUrl requests and also review your webhost\'s security system/firewall settings to ensure that it is configured to allow your WordPress instance to send/receive on port 443.';
             $message = $message . '<br>--';
             $message = $message . '<br>Accessing: https://api.giftup.app/ping';
-            $message = $message . '<br>Response code: ' . $result->code;
+            $message = $message . '<br>Response code: ' . $api_response->code;
 
-            if ( $result->renderable_body ) {
-                $message = $message . '<br>Response body: ' . $result->renderable_body;
+            if ( $api_response->renderable_body ) {
+                $message = $message . '<br>Response body: ' . $api_response->renderable_body;
             }
 
-            $message = $message . self::add_diagnostics( $result );
+            $message = $message . $this->add_diagnostics( $tls_1_2_response_body );
 
             return array(
                 'message' => $message,
                 'status' => 'error'
             );
         }
+    }
+
+    private static function add_diagnostics( $tls_1_2_response_body ) {
+        $message = "<br>--";
+
+        try {
+            if (!function_exists('curl_version')) {
+                $message = $message . '<br>cURL not installed.';
+            } else {
+                $curl_version = curl_version();
+                $message = $message . '<br>cURL version installed: ' . $curl_version['ssl_version'];
+            }
+            if (function_exists('phpversion')) {
+                $message = $message . '<br>PHP version installed: ' . phpversion();
+            }
+            $message = $message . '<br>TLS check response: <span style="word-break: break-all">' . $tls_1_2_response_body . '</span>';
+        }
+        catch (exception $e) {
+            return $message;
+        }
+
+        return $message;
     }
 }

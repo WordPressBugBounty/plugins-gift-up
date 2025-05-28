@@ -7,62 +7,68 @@ function giftup_woocommerce_cart_coupon() {
         $incomingcode = $_POST['giftup_gift_card_code'];
     }
 
-    $appliedcode = giftup_cache::get_gift_card_code();
-    $balance = giftup_api::get_gift_card_balance();
-    $isCurrencyBacked = giftup_api::get_is_currency_backed();
-    $isValid = giftup_api::get_gift_card_is_valid();
+    $giftCardFound = GiftUp()->cache->gift_card_found();
+    $appliedcode = GiftUp()->cache->get_accepted_gift_card_code();
+    $balance = GiftUp()->api->get_gift_card_balance();
+    $isCurrencyBacked = GiftUp()->api->get_is_currency_backed();
+    $isValid = GiftUp()->api->get_gift_card_is_valid();
 
     $initial_gc_apply_state = "inline-block";
     $initial_gc_form_state = "none";
     $message = "";
 
-    if ( isset($appliedcode) && strlen($appliedcode) > 0 && ($isValid == false || $balance <= 0 || $isCurrencyBacked == false) ) {
+    if ( $giftCardFound && ($isValid == false || $balance <= 0 || $isCurrencyBacked === false) ) {
         $appliedcode = "";
         $initial_gc_apply_state = "none";
         $initial_gc_form_state = "grid";
 
         if ( $isValid == false ) {
             $message = __( 'Gift card is no longer valid', 'gift-up' );
-            $appliedcode = giftup_cache::set_gift_card_code( null );
+            //$appliedcode = GiftUp()->cache->set_gift_card_code( null );
 
-        } else if ( $isCurrencyBacked == false ) {
+        } else if ( $isCurrencyBacked === false ) {
             $message = __( 'Gift card cannot be used as it is a unit-backed, not a currency-backed gift card', 'gift-up' );
-            $appliedcode = giftup_cache::set_gift_card_code( null );
+            //$appliedcode = GiftUp()->cache->set_gift_card_code( null );
 
         } else if ( $balance <= 0 ) {
             $message = __( 'Gift card has no remaining balance', 'gift-up' );
-            $appliedcode = giftup_cache::set_gift_card_code( null );
+            //$appliedcode = GiftUp()->cache->set_gift_card_code( null );
         }
     }
-    else if ( empty($incomingcode) == false && empty($appliedcode) ) {
+    else if ( empty($incomingcode) == false && !$giftCardFound ) {
+        $appliedcode = "";
         $initial_gc_apply_state = "none";
         $initial_gc_form_state = "grid";
         $message =  __( 'Gift card not found', 'gift-up' );
-        $appliedcode = giftup_cache::set_gift_card_code( null );
+        //$appliedcode = GiftUp()->cache->set_gift_card_code( null );
     }
 
     $responsive_title = __( 'Gift card', 'gift-up' );
 
-    if ( !empty($appliedcode)) {
+    if ( $giftCardFound ) {
         $responsive_title = $responsive_title . " (" . $appliedcode . ")";
     }
 
     ?>
     <tr class="cart-subtotal giftup-cart-subtotal">
         <th class="giftup-cart-subtotal-th">
-            <?php if ( giftup_options::get_woocommerce_is_in_test_mode() ): ?>
+            <?php if ( GiftUp()->options->get_woocommerce_is_in_test_mode() ): ?>
                 [TEST]
             <?php endif; ?>
-            <?php echo __( 'Gift card', 'gift-up' ) ?><?php if ( !empty($appliedcode) ): ?>: <span style="text-transform: uppercase" class="giftup-cart-subtotal-th-balance-title"><?php echo esc_html($appliedcode) ?></span><?php endif; ?>
+            <?php echo __( 'Gift card', 'gift-up' ) ?><?php if ( $giftCardFound ): ?>: <span style="text-transform: uppercase" class="giftup-cart-subtotal-th-balance-title"><?php echo esc_html($appliedcode) ?></span><?php endif; ?>
 
-            <?php if ( !empty($appliedcode) ): ?>
+            <?php if ( $giftCardFound ): ?>
                 <div class="giftup-cart-subtotal-th-balance-container" style="font-weight: normal; font-size: small; font-weight: 300;">
-                    <div class="giftup-cart-subtotal-th-balance-value"><?php echo __( 'Balance', 'gift-up' ) ?>: <?php echo wc_price($balance) ?></div>
+                    <div class="giftup-cart-subtotal-th-balance-value"><?php echo __( 'Available balance', 'gift-up' ) ?>: <?php echo wc_price($balance) ?></div>
                 </div>
             <?php endif; ?>
         </th>
         <td data-title="<?php echo esc_attr($responsive_title) ?>" class="giftup-cart-subtotal-td">
-            <?php if ( empty($appliedcode) ): ?>
+            <?php if ( $giftCardFound ): ?>
+                <div class="woocommerce-Price-amount amount giftup-cart-subtotal-td-applied-balance" style="font-weight: normal;">
+                    <div>-<?php echo wc_price(GiftUp()->cache->applied_gift_card_balance) ?> [<a href="#" onclick="giftup_set_code(''); return false;"><?php echo __( 'Remove', 'gift-up' ) ?></a>]</div>
+                </div>
+            <?php else: ?>
                 <a href="javascript:void(0)" 
                    class="giftup-cart-subtotal-td-apply-gc"
                    style="display: <?php echo esc_attr($initial_gc_apply_state) ?>"
@@ -90,14 +96,10 @@ function giftup_woocommerce_cart_coupon() {
                         <li><?php echo $message ?></li>
                     </ul>                
                 <?php endif; ?>
-            <?php else: ?>
-                <div class="woocommerce-Price-amount amount giftup-cart-subtotal-td-applied-balance" style="font-weight: normal;">
-                    <div>-<?php echo wc_price(giftup_cache::$applied_gift_card_balance) ?> [<a href="#" onclick="giftup_set_code(''); return false;"><?php echo __( 'Remove', 'gift-up' ) ?></a>]</div>
-                </div>
             <?php endif; ?>
         </td>
     </tr>
-    <?php if ( !giftup_options::get_woocommerce_is_in_test_mode() && giftup_options::get_woocommerce_test_mode_cookie_set() ): ?>
+    <?php if ( !GiftUp()->options->get_woocommerce_is_in_test_mode() && GiftUp()->options->get_woocommerce_test_mode_cookie_set() ): ?>
         <tr class="cart-subtotal giftup-cart-subtotal">
             <td colspan="2">
                 <div class="giftup-cart-subtotal-error" style="color: #990000" role="alert">

@@ -1,21 +1,14 @@
 <?php
 
-class giftup_settings
+class GiftUp_Settings
 {
-    public static $plugin;
-    public static $plugin_directory;
+    private static $plugin;
+    private static $plugin_directory;
     
-    /**
-     * Settings class constructor
-     *
-     * @param  string   $plugin_directory   name of the plugin directory
-     *
-     * @return void
-     */
-    public function __construct( $plugin, $plugin_directory )
+    public function __construct()
     {
-        self::$plugin = $plugin;
-        self::$plugin_directory = $plugin_directory;
+        self::$plugin = GiftUp()->get_plugin_basename();
+        self::$plugin_directory = GiftUp()->get_plugin_basedirectory();
       
         add_action( 'init', array( __CLASS__, 'set_up_menu' ) );
     }
@@ -27,27 +20,27 @@ class giftup_settings
      */
     public static function set_up_menu()
     {
-        // Add Gift Up! settings page in the menu
+        // Add Gift Up settings page in the menu
         add_action( 'admin_menu', array( __CLASS__, 'add_settings_menu' ) );
         
-        // Add Gift Up! settings page in the plugin list
+        // Add Gift Up settings page in the plugin list
         add_filter( 'plugin_action_links_' . self::$plugin, array( __CLASS__, 'add_settings_link' ) );
 
-        // Add Gift Up! notification globally
+        // Add Gift Up notification globally
         add_action( 'admin_notices', array( __CLASS__, 'show_nag_messages' ) );
     }
     
     /**
-     * Add Gift Up! settings page in the menu
+     * Add Gift Up settings page in the menu
      *
      * @return void
      */
     public static function add_settings_menu() {
-        add_options_page( 'Gift Up!', 'Gift Up!', 'manage_options', 'giftup-settings', array( __CLASS__, 'show_settings_page' ));
+        add_options_page( 'Gift Up', 'Gift Up', 'manage_options', 'giftup-settings', array( __CLASS__, 'show_settings_page' ));
     }
 
     /**
-     * Add Gift Up! settings page in the plugin list
+     * Add Gift Up settings page in the plugin list
      *
      * @param  mixed   $links   links
      *
@@ -67,22 +60,22 @@ class giftup_settings
      * @return void
      */
     public static function show_nag_messages() {
-        if (giftup_options::get_company_id() == false) {
-            echo '<div class="notice notice-warning is-dismissible" id="giftup-nag"><p>' . __( 'Please <a href="/wp-admin/options-general.php?page=giftup-settings">connect/create your Gift Up! account</a> to your WordPress account to sell gift cards online' ) . '</p></div>';
+        if (GiftUp()->options->get_company_id() == false) {
+            echo '<div class="notice notice-warning is-dismissible" id="giftup-nag"><p>' . __( 'Please <a href="/wp-admin/options-general.php?page=giftup-settings">connect/create your Gift Up account</a> to your WordPress account to sell gift cards online' ) . '</p></div>';
         } 
-        elseif (giftup_options::get_woocommerce_enabled()
-                && giftup_options::get_woocommerce_operating_mode() == giftup_options::WOO_MODE_DISCOUNT_COUPONS
-                && giftup_diagnostics::woocommerce_installed_version() != null) {
-            echo '<div class="notice notice-warning is-dismissible" id="giftup-nag"><p>' . __( 'Please <a href="/wp-admin/options-general.php?page=giftup-settings">upgrade your Gift Up! + WooCommerce connection</a> to improve the customer redemption experience in your cart' ) . '</p></div>';
+        elseif (GiftUp()->options->get_woocommerce_enabled()
+                && GiftUp()->options->get_woocommerce_operating_mode() == GIFTUP_WOO_MODE_DISCOUNT_COUPONS
+                && GiftUp()->diagnostics->woocommerce_installed_version() != null) {
+            echo '<div class="notice notice-warning is-dismissible" id="giftup-nag"><p>' . __( 'Please <a href="/wp-admin/options-general.php?page=giftup-settings">upgrade your Gift Up + WooCommerce connection</a> to improve the customer redemption experience in your cart' ) . '</p></div>';
         }
 
-        if ( giftup_api::different_roots_enabled() ) {
-            echo '<div class="notice notice-warning" id="giftup-nag-2"><p>You are pointing to a different Gift Up! environment.</p></div>';
+        if ( GiftUp()->api->different_roots_enabled() ) {
+            echo '<div class="notice notice-warning" id="giftup-nag-2"><p>You are pointing to a different Gift Up environment.</p></div>';
         }
     }
 
     /**
-     * Display Gift Up! settings page content
+     * Display Gift Up settings page content
      *
      * @return void
      */
@@ -97,39 +90,39 @@ class giftup_settings
             }
         }
 
-        $giftup_dashboard_root = giftup_api::dashboard_root();
-        $giftup_api_key = giftup_options::get_api_key();
-        $giftup_company_id = giftup_options::get_company_id();
+        $giftup_dashboard_root = GiftUp()->api->dashboard_root();
+        $giftup_api_key = GiftUp()->options->get_api_key();
+        $giftup_company_id = GiftUp()->options->get_company_id();
 
         if ( $giftup_api_key ) {
-            $giftup_company = giftup_api::get_company();
+            $giftup_company = GiftUp()->api->get_company();
         }
 
         $current_user = wp_get_current_user();
         $giftup_email_address = $current_user->user_email;
 
-        $woocommerce_version = giftup_diagnostics::woocommerce_installed_version();
-        $woocommerce_activated = giftup_diagnostics::is_woocommerce_activated();
+        $woocommerce_version = GiftUp()->diagnostics->woocommerce_installed_version();
+        $woocommerce_activated = GiftUp()->diagnostics->is_woocommerce_activated();
         $woocommerce_installed = $woocommerce_version != null;
 
         if (strlen( $giftup_company_id ) > 0 && $woocommerce_installed ) {
             $woocommerce_version_compatible = version_compare( $woocommerce_version, '3.0', '>=' );
-            $woocommerce_enabled = $woocommerce_version_compatible && giftup_options::get_woocommerce_enabled() == true;
+            $woocommerce_enabled = $woocommerce_version_compatible && GiftUp()->options->get_woocommerce_enabled() == true;
 
-            $woocommerce_apply_to_shipping = giftup_options::get_woocommerce_apply_to_shipping();
-            $woocommerce_apply_to_taxes = giftup_options::get_woocommerce_apply_to_taxes();
+            $woocommerce_apply_to_shipping = GiftUp()->options->get_woocommerce_apply_to_shipping();
+            $woocommerce_apply_to_taxes = GiftUp()->options->get_woocommerce_apply_to_taxes();
             
             $woocommerce_can_enable_test_mode = current_user_can('administrator');
             $woocommerce_enabled_test_mode = self::is_test_mode();
             $woocommerce_enabled_diagnostics_mode = self::is_diagnostics_on();
 
             if ( $woocommerce_enabled_diagnostics_mode ) {
-                $instaled_plugins_list = giftup_diagnostics::get_plugins_list();
+                $instaled_plugins_list = GiftUp()->diagnostics->get_plugins_list();
             }
 
-            $mode = giftup_options::get_woocommerce_operating_mode();
+            $mode = GiftUp()->options->get_woocommerce_operating_mode();
 
-            $woocommerce_connection_status = giftup_api::get_woocommerce_connection_status();
+            $woocommerce_connection_status = GiftUp()->api->get_woocommerce_connection_status();
             $woocommerce_is_connected = $woocommerce_connection_status != null && $woocommerce_connection_status["isConnected"] == true;
             $woocommerce_uses_api_direct = $woocommerce_is_connected && $woocommerce_connection_status["usesApiDirect"] == true;
 
@@ -141,33 +134,33 @@ class giftup_settings
 
             if ( $woocommerce_enabled ) {
                 if ( $woocommerce_is_connected == false ) {
-                    if ( giftup_api::notify_connect_woocommerce() ) {
+                    if ( GiftUp()->api->notify_connect_woocommerce() ) {
                         self::delete_woocommerce_webhook();
                         $woocommerce_upgrade_required = false;
                     }
                 }
-                else if ( $mode == giftup_options::WOO_MODE_API && $woocommerce_uses_api_direct == false ) {
-                    if ( giftup_api::notify_connect_woocommerce() ) {
+                else if ( $mode == GIFTUP_WOO_MODE_API && $woocommerce_uses_api_direct == false ) {
+                    if ( GiftUp()->api->notify_connect_woocommerce() ) {
                         self::delete_woocommerce_webhook();
                         $woocommerce_upgrade_required = false;
                     }
                 }
-                else if ( $mode == giftup_options::WOO_MODE_DISCOUNT_COUPONS && $woocommerce_uses_api_direct ) {
+                else if ( $mode == GIFTUP_WOO_MODE_DISCOUNT_COUPONS && $woocommerce_uses_api_direct ) {
                     self::upgrade_woocommerce_operating_mode();
                     $woocommerce_upgrade_required = false;
                 }
             } elseif ( $woocommerce_is_connected ) {
-                giftup_api::notify_disconnect_woocommerce();
+                GiftUp()->api->notify_disconnect_woocommerce();
             }
 
             if ( strtolower($woocommerce_currency) != strtolower($giftup_currency) ) {
-                giftup_options::set_woocommerce_enabled( false );
+                GiftUp()->options->set_woocommerce_enabled( false );
                 $woocommerce_enabled = false;
                 $woocommerce_can_enable = false;
             }
 
-            $mode = giftup_options::get_woocommerce_operating_mode();
-            $woocommerce_legacy_method = $mode == giftup_options::WOO_MODE_DISCOUNT_COUPONS;
+            $mode = GiftUp()->options->get_woocommerce_operating_mode();
+            $woocommerce_legacy_method = $mode == GIFTUP_WOO_MODE_DISCOUNT_COUPONS;
         }
 
         require_once self::$plugin_directory . 'view/giftup-settings.php';
@@ -221,26 +214,26 @@ class giftup_settings
             $api_key = $params['giftup_api_key'];
 
             if ( strlen($api_key) == 0 ) {
-                giftup_options::disconnect();
+                GiftUp()->options->disconnect();
                 
                 return array(
-                    'message' => 'Gift Up! account disconnected',
+                    'message' => 'Gift Up account disconnected',
                     'status' => 'error'
                 );
             } else {
-                $company = giftup_api::get_company( $api_key );
+                $company = GiftUp()->api->get_company( $api_key );
 
                 if ( NULL !== $company ) {
-                    giftup_options::set_api_key( $api_key );
-                    giftup_options::set_company_id( $company['id'] );
+                    GiftUp()->options->set_api_key( $api_key );
+                    GiftUp()->options->set_company_id( $company['id'] );
 
-                    if ( giftup_diagnostics::woocommerce_installed_version() != null ) {
-                        giftup_api::notify_connect_woocommerce();
+                    if ( GiftUp()->diagnostics->woocommerce_installed_version() != null ) {
+                        GiftUp()->api->notify_connect_woocommerce();
                     }
         
                     return;
                 } else {
-                    return giftup_diagnostics::test_curl( $api_key );
+                    return GiftUp()->diagnostics->test_curl( $api_key );
                 }
             }
         }
@@ -282,9 +275,9 @@ class giftup_settings
                 );
             }
     
-            giftup_options::set_woocommerce_enabled( isset($params['giftup_woocommerce_enabled']) && $params['giftup_woocommerce_enabled'] == "on" );
-            giftup_options::set_woocommerce_apply_to_shipping( isset($params['woocommerce_apply_to_shipping']) && $params['woocommerce_apply_to_shipping'] == "on" );
-            giftup_options::set_woocommerce_apply_to_taxes( isset($params['woocommerce_apply_to_taxes']) && $params['woocommerce_apply_to_taxes'] == "on" );
+            GiftUp()->options->set_woocommerce_enabled( isset($params['giftup_woocommerce_enabled']) && $params['giftup_woocommerce_enabled'] == "on" );
+            GiftUp()->options->set_woocommerce_apply_to_shipping( isset($params['woocommerce_apply_to_shipping']) && $params['woocommerce_apply_to_shipping'] == "on" );
+            GiftUp()->options->set_woocommerce_apply_to_taxes( isset($params['woocommerce_apply_to_taxes']) && $params['woocommerce_apply_to_taxes'] == "on" );
             
             // Drop a 1 hour cookie for test & diagnostics mode
             $val = isset($params['woocommerce_test_mode']) ? $params['woocommerce_test_mode'] : "live";
@@ -298,46 +291,24 @@ class giftup_settings
         }
     }
 
-    private static function add_diagnostics( $test ) {
-        $message = "<br>--";
-
-        try {
-            if (!function_exists('curl_version')) {
-                $message = $message . '<br>cURL not installed.';
-            } else {
-                $curl_version = curl_version();
-                $message = $message . '<br>cURL version installed: ' . $curl_version['ssl_version'];
-            }
-            if (function_exists('phpversion')) {
-                $message = $message . '<br>PHP version installed: ' . phpversion();
-            }
-            $message = $message . '<br>TLS check response: <span style="word-break: break-all">' . $test->tls_1_2_response_body . '</span>';
-        }
-        catch (exception $e) {
-            return $message;
-        }
-
-        return $message;
-    }
-
     public static function upgrade_woocommerce_operating_mode() {
-        if ( giftup_diagnostics::woocommerce_installed_version() == null ) {
-            giftup_api::notify_disconnect_woocommerce();
+        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null ) {
+            GiftUp()->api->notify_disconnect_woocommerce();
             return;
         }
 
-        if (giftup_options::get_woocommerce_operating_mode() == giftup_options::WOO_MODE_API) {
+        if (GiftUp()->options->get_woocommerce_operating_mode() == GIFTUP_WOO_MODEAPI) {
             return;
         }
 
         self::delete_all_woocommerce_giftcardcoupons();
         self::delete_woocommerce_webhook();
 
-        giftup_api::notify_connect_woocommerce();
+        GiftUp()->api->notify_connect_woocommerce();
     }
 
     public static function delete_woocommerce_webhook() {
-        if ( giftup_diagnostics::woocommerce_installed_version() == null ) {
+        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null ) {
             return;
         }
 
@@ -355,7 +326,7 @@ class giftup_settings
     }
 
     private static function delete_all_woocommerce_giftcardcoupons() {
-        if ( giftup_diagnostics::woocommerce_installed_version() == null ) {
+        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null ) {
             return;
         }
 
@@ -366,7 +337,7 @@ class giftup_settings
         $gift_cards = null;
 
         do {
-            $api_response = giftup_api::get_gift_cards($offset, $limit);
+            $api_response = GiftUp()->api->get_gift_cards($offset, $limit);
 
             if ($api_response != null) {
                 $gift_cards = $api_response['giftCards'];

@@ -36,7 +36,7 @@ function giftup_shortcode( $atts ) {
     $companyId = str_replace( "‚", "", $companyId );
 
     if ( strlen($companyId) != 36 ) {
-        $companyId = trim( giftup_options::get_company_id() );
+        $companyId = trim( GiftUp()->options->get_company_id() );
     }
 
     if ( strlen($companyId) == 36 ) {

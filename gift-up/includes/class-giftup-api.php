@@ -1,6 +1,6 @@
 <?php
 
-class giftup_api_response {
+class GiftUp_API_Response {
     public $success = false;
     public $code = 0;
     public $body = "";
@@ -11,8 +11,8 @@ class giftup_api_response {
 
         $this->code = wp_remote_retrieve_response_code( $response );
         $this->success = $this->code >= 200 && $this->code < 300;
-        $this->body = self::isJson( $body ) ? json_decode( $body, true ) : $body;
-        $this->renderable_body = self::isJson( $body ) ? $body : '<div style="word-break: break-all; overflow-x: none; overflow-y: auto; max-height: 200px;">' . htmlentities( $body ) . '</div>';
+        $this->body = $this->isJson( $body ) ? json_decode( $body, true ) : $body;
+        $this->renderable_body = $this->isJson( $body ) ? $body : '<div style="word-break: break-all; overflow-x: none; overflow-y: auto; max-height: 200px;">' . htmlentities( $body ) . '</div>';
     }
 
     function isJson( $string ) {
@@ -21,43 +21,43 @@ class giftup_api_response {
     }
 }
 
-class giftup_api
+class GiftUp_API
 {
     /**
     * Get a gift card remaining balance
     *
     * @return balance as decimal
     */
-    public static function get_gift_card_balance( $code = null ) {
+    public function get_gift_card_balance( $code = null ) {
         if (empty($code)){
-            $code = giftup_cache::get_gift_card_code();
+            $code = GiftUp()->cache->get_accepted_gift_card_code();
         }
 
         if (!empty($code)) {
-            $giftcard = self::get_gift_card($code);
+            $giftcard = $this->get_gift_card($code);
 
             if ($giftcard !== NULL 
                 && $giftcard['canBeRedeemed'] 
-                && self::get_gift_card_is_valid($code)
+                && $this->get_gift_card_is_valid($code)
                 && isset($giftcard['remainingValue']) 
                 && is_numeric($giftcard['remainingValue'])) {
                 return $giftcard['remainingValue'];
             }
         }
         
-        return 0;
+        return null;
     }
 
     /**
     * @return true if gift card has expired
     */
-    public static function get_gift_card_is_valid( $code = null ) {
+    public function get_gift_card_is_valid( $code = null ) {
         if (empty($code)){
-            $code = giftup_cache::get_gift_card_code();
+            $code = GiftUp()->cache->get_accepted_gift_card_code();
         }
 
         if (!empty($code)) {
-            $giftcard = self::get_gift_card($code);
+            $giftcard = $this->get_gift_card($code);
 
             if ($giftcard !== NULL 
                 && ($giftcard['hasExpired'] == 1 || $giftcard['notYetValid'] == 1))
@@ -72,13 +72,13 @@ class giftup_api
     /**
     * @return true if gift card is currency backed
     */
-    public static function get_is_currency_backed( $code = null ) {
+    public function get_is_currency_backed( $code = null ) {
         if (empty($code)){
-            $code = giftup_cache::get_gift_card_code();
+            $code = GiftUp()->cache->get_accepted_gift_card_code();
         }
 
         if (!empty($code)) {
-            $giftcard = self::get_gift_card($code);
+            $giftcard = $this->get_gift_card($code);
 
             if ($giftcard !== NULL
                 && $giftcard['backingType'] !== NULL)
@@ -87,7 +87,7 @@ class giftup_api
             }
         }
         
-        return false;
+        return null;
     }
     
     /**
@@ -95,35 +95,37 @@ class giftup_api
     *
     * @return giftcard object
     */
-    public static function get_gift_card( $code = null ) {
+    public function get_gift_card( $code = null ) {
         // Look this up in our cache
-        if ($code != null && giftup_cache::$giftcard != NULL && strtolower($code) == strtolower(giftup_cache::$giftcard['code']) ) {
-            return giftup_cache::$giftcard;
+        if ($code != null
+            && GiftUp()->cache->giftcard != NULL
+            && strtolower($code) == strtolower(GiftUp()->cache->giftcard['code']) ) {
+            return GiftUp()->cache->giftcard;
         }
 
         if (empty($code)){
-            $code = giftup_cache::get_gift_card_code();
+            $code = GiftUp()->cache->get_accepted_gift_card_code();
         }
 
         if (!empty($code)) {
-            $debug = giftup_options::get_woocommerce_diagnostics_mode();
+            $debug = GiftUp()->options->get_woocommerce_diagnostics_mode();
 
             if ($debug) {
-                giftup_diagnostics::append( "├ Looking up gift card " . $code . " via API" );
+                GiftUp()->diagnostics->append( "├ Looking up gift card " . $code . " via API" );
             }
         
-            $response = self::invoke( '/gift-cards-woocommerce/' . rawurlencode( $code ) );
+            $response = $this->invoke( '/gift-cards-woocommerce/' . rawurlencode( $code ) );
         
             if ($response->success) {
-                giftup_cache::$giftcard = $response->body;
+                GiftUp()->cache->giftcard = $response->body;
                 return $response->body;
             }
         
             if ($debug) {
-                giftup_diagnostics::append( "├ Gift card " . $code . " not found (" . $response->code . ")" );
+                GiftUp()->diagnostics->append( "├ Gift card " . $code . " not found (" . $response->code . ")" );
 
                 if ( $response->code != 404 && $response->renderable_body !== NULL && strlen( $response->renderable_body ) > 0 ) {
-                    giftup_diagnostics::append( "├ " . $response->renderable_body );
+                    GiftUp()->diagnostics->append( "├ " . $response->renderable_body );
                 }
             }
         }
@@ -136,8 +138,8 @@ class giftup_api
     *
     * @return list<giftcard> object
     */
-    public static function get_gift_cards( $offset = 0, $limit = 10 ) {
-        $response = self::invoke( '/gift-cards?offset=' . $offset . '&limit=' . $limit );
+    public function get_gift_cards( $offset = 0, $limit = 10 ) {
+        $response = $this->invoke( '/gift-cards?offset=' . $offset . '&limit=' . $limit );
     
         if ($response->success) {
             return $response->body;
@@ -151,14 +153,14 @@ class giftup_api
     *
     * @return boolean representing whether the redeem worked
     */
-    public static function redeem_gift_card( $code, $value, $order_id ) {
-        $giftcard = self::get_gift_card( $code );
+    public function redeem_gift_card( $code, $value, $order_id ) {
+        $giftcard = $this->get_gift_card( $code );
     
         if ($giftcard == NULL) {
             return -1001;
         }
         
-        $balance = self::get_gift_card_balance( $code );
+        $balance = $this->get_gift_card_balance( $code );
 
         if ( $balance < $value ) {
             return -1002;
@@ -176,7 +178,7 @@ class giftup_api
         $reason = "Redeemed against WooCommerce order id " . $order_id;
 
         $payload = [];
-        $response = self::invoke( '/gift-cards/' . rawurlencode( $code ) . '/redeem-woocommerce?amount=' . $rounded_value . '&reason=' . rawurlencode( $reason ), 'POST', $payload );
+        $response = $this->invoke( '/gift-cards/' . rawurlencode( $code ) . '/redeem-woocommerce?amount=' . $rounded_value . '&reason=' . rawurlencode( $reason ), 'POST', $payload );
         
         if ( $response->success ) {
             return $response->body['redeemedAmount'];
@@ -185,7 +187,7 @@ class giftup_api
         //  Fallback GET request to avert 411 HTTP responses
         if ( $response->code == 411 ) {
             $cache_bust = self::generate_random_string(10);
-            $response = self::invoke( '/gift-cards/' . rawurlencode( $code ) . '/redeem-woocommerce?amount=' . $rounded_value . '&reason=' . rawurlencode( $reason ) . '&cb=' . $cache_bust, 'GET' );
+            $response = $this->invoke( '/gift-cards/' . rawurlencode( $code ) . '/redeem-woocommerce?amount=' . $rounded_value . '&reason=' . rawurlencode( $reason ) . '&cb=' . $cache_bust, 'GET' );
         }
         
         if ( $response->success ) {
@@ -210,14 +212,14 @@ class giftup_api
     *
     * @return boolean representing whether the add credit worked
     */
-    public static function add_credit_to_gift_card( $code, $value, $order_id ) {
-        $giftcard = self::get_gift_card( $code );
+    public function add_credit_to_gift_card( $code, $value, $order_id ) {
+        $giftcard = $this->get_gift_card( $code );
     
         if ($giftcard == NULL) {
             return false;
         }
         
-        $balance = self::get_gift_card_balance( $code );
+        $balance = $this->get_gift_card_balance( $code );
 
         if ( $balance < $value ) {
             return false;
@@ -237,7 +239,7 @@ class giftup_api
             'reason' => "WooCommerce order cancelled " . $order_id
         ];
 
-        $response = self::invoke( '/gift-cards/' . rawurlencode( $code ) . '/add-credit', 'POST', $payload );
+        $response = $this->invoke( '/gift-cards/' . rawurlencode( $code ) . '/add-credit', 'POST', $payload );
         
         return $response->success;
     }
@@ -247,8 +249,8 @@ class giftup_api
     *
     * @return  string
     */
-    public static function get_company( $api_key = null ) {
-        $response = self::invoke( '/company', 'GET', null, $api_key );
+    public function get_company( $api_key = null ) {
+        $response = $this->invoke( '/company', 'GET', null, $api_key );
         
         if ( $response->success ) {
             return $response->body;
@@ -257,9 +259,9 @@ class giftup_api
         return null;
     }
 
-    public static function get_woocommerce_connection_status()
+    public function get_woocommerce_connection_status()
     {
-        $response = self::invoke( '/integrations/woocommerce/test?noprobe=true' );
+        $response = $this->invoke( '/integrations/woocommerce/test?noprobe=true' );
 
         if ( $response->success ) {
             return $response->body;
@@ -268,28 +270,28 @@ class giftup_api
         return null;
     }
 
-    public static function notify_connect_woocommerce()
+    public function notify_connect_woocommerce()
     {
         $payload = [];
         $payload['storeUrl'] = get_site_url();
 
-        $response = self::invoke( '/integrations/woocommerce/connect', 'POST', $payload );
+        $response = $this->invoke( '/integrations/woocommerce/connect', 'POST', $payload );
 
         if ($response->success) {
-            giftup_options::set_woocommerce_operating_mode( giftup_options::WOO_MODE_API );
+            GiftUp()->options->set_woocommerce_operating_mode( GIFTUP_WOO_MODE_API );
         }
 
         return $response->success;
     }
 
-    public static function notify_disconnect_woocommerce()
+    public function notify_disconnect_woocommerce()
     {
-        $response = self::invoke( '/integrations/woocommerce/disconnect', 'POST' );
+        $response = $this->invoke( '/integrations/woocommerce/disconnect', 'POST' );
 
         return $response->success;
     }
 
-    public static function api_root()
+    public function api_root()
     {
         if (isset( $_COOKIE['giftup_api_root'] )) {
             return $_COOKIE['giftup_api_root'];
@@ -298,7 +300,7 @@ class giftup_api
         return 'https://api.giftup.app';
     }
 
-    public static function dashboard_root()
+    public function dashboard_root()
     {
         if (isset( $_COOKIE['giftup_dashboard_root'] )) {
             return $_COOKIE['giftup_dashboard_root'];
@@ -307,7 +309,7 @@ class giftup_api
         return 'https://giftup.app';
     }
 
-    public static function different_roots_enabled()
+    public function different_roots_enabled()
     {
         if (!empty( $_COOKIE['giftup_dashboard_root'] ) or !empty( $_COOKIE['giftup_api_root'] )) {
             return true;
@@ -321,8 +323,8 @@ class giftup_api
     *
     * @return  string
     */
-    public static function invoke( $endpoint, $method = "GET", $data = null, $api_key = null ) {
-        $root = self::api_root();
+    public function invoke( $endpoint, $method = "GET", $data = null, $api_key = null ) {
+        $root = $this->api_root();
         $url = esc_url_raw( $root . $endpoint );
         $response = false;
         $json = null;
@@ -336,11 +338,11 @@ class giftup_api
         }
 
         if ($api_key === NULL) {
-            $api_key = giftup_options::get_api_key();
+            $api_key = GiftUp()->options->get_api_key();
         }
 
         $plugin_version = GIFTUP_VERSION;
-        $woocommerce_version = giftup_diagnostics::woocommerce_installed_version();
+        $woocommerce_version = GiftUp()->diagnostics->woocommerce_installed_version();
         $php_version = phpversion();
         global $wp_version;
 
@@ -365,7 +367,7 @@ class giftup_api
                 'content-type' => 'application/json',
                 'accept' => '*/*',
                 'user-agent' => 'WordPress/GiftUp-WordPress-Plugin',
-                'x-giftup-testmode' => giftup_options::get_woocommerce_is_in_test_mode() ? "true" : "false",
+                'x-giftup-testmode' => GiftUp()->options->get_woocommerce_is_in_test_mode() ? "true" : "false",
                 'x-giftup-wordpress-plugin-version' => $plugin_version,
                 'x-giftup-wordpress-php-version' => $php_version,
                 'x-giftup-wordpress-version' => $wp_version,
@@ -402,6 +404,6 @@ class giftup_api
             echo '</div>';
         }
 
-        return new giftup_api_response( $response );
+        return new GiftUp_API_Response( $response );
     }
 }

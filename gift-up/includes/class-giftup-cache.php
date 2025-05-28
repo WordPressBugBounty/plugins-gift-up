@@ -1,27 +1,44 @@
 <?php
 
-class giftup_cache
+class GiftUp_Cache
 {
     // Cache API gift card get API result per web request
-    public static $giftcard = null;
+    public $giftcard = null;
 
     // Cache some cart totals
-    public static $applied_gift_card_balance = 0;
+    public $applied_gift_card_balance = 0;
 
-    public static function get_gift_card_code() {
+    public function gift_card_found() {
+        return $this->giftcard != null
+               && strlen($this->get_accepted_gift_card_code()) > 0; 
+    }
+
+    public function get_requested_gift_card_code() {
         if (WC()->session) {
-            return WC()->session->get( GIFTUP_SESSION_KEY );
+            return WC()->session->get( GIFTUP_REQUESTED_GIFTCARD_CODE );
         }
         return null;
     }
 
-    public static function set_gift_card_code( $code ) {
+    public function get_accepted_gift_card_code() {
         if (WC()->session) {
+            return WC()->session->get( GIFTUP_ACCEPTED_GIFTCARD_CODE );
+        }
+        return null;
+    }
+
+    public function set_gift_card_code( $code ) {
+        if (WC()->session) {
+            WC()->session->set( GIFTUP_REQUESTED_GIFTCARD_CODE, $code );
+
             if (empty($code) || $code == null) {
-                WC()->session->__unset( GIFTUP_SESSION_KEY );
+                WC()->session->set( GIFTUP_ACCEPTED_GIFTCARD_CODE, null );
             }
-            else if (giftup_api::get_gift_card($code) != null) {
-                WC()->session->set( GIFTUP_SESSION_KEY, $code );
+            else if (GiftUp()->api->get_gift_card($code) != null) {
+                WC()->session->set( GIFTUP_ACCEPTED_GIFTCARD_CODE, $this->giftcard['code'] );
+            }
+            else {
+                WC()->session->set( GIFTUP_ACCEPTED_GIFTCARD_CODE, null );
             }
         }
     }
