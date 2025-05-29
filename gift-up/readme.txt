@@ -5,7 +5,7 @@ Tags: gift cards, gift certificates, gift vouchers, gift certificate, voucher, w
 Requires at least: 3.0.1
 Requires PHP: 5.6
 Tested up to: 6.8.1
-Stable tag: 3.0
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Plugin URI: https://en-gb.wordpress.org/plugins/gift-up/
@@ -155,6 +155,9 @@ Please note, that the new (and crucially experimental) feature named "WooCommerc
 7. Clear, accurate reporting that's available to export
 
 == Changelog ==
+
+= 3.0.1 =
+* Bug fix release to include missing file in release
 
 = 3.0 =
 * Support WooCommerce blocks based cart & checkout for gift card redemption
