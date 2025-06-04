@@ -1,11 +1,11 @@
 === Gift Up Gift Cards for WordPress and WooCommerce ===
 Contributors: KoanLeeroy
 Donate link: https://www.giftup.com/
-Tags: gift cards, gift certificates, gift vouchers, gift certificate, voucher, woo commerce, woocommerce
+Tags: gift cards, gift certificates, gift vouchers, gift certificate, woocommerce
 Requires at least: 3.0.1
 Requires PHP: 5.6
 Tested up to: 6.8.1
-Stable tag: 3.0.1
+Stable tag: 3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Plugin URI: https://en-gb.wordpress.org/plugins/gift-up/
@@ -19,7 +19,7 @@ If you also use WooCommerce, then your customers can redeem their gift cards in 
 
 [Gift Up](https://www.giftup.com/) is the simplest way to sell gift cards online. It's completely free to setup and there are no monthly fees, we only change a small fee when you sell a gift card.
 
-Gift Up is an app that works with your existing wordpress website and social media platforms and allows you to create and sell gift cards for your business. It's very simple for you to install, and it's a seamless experience for your customers. 
+Gift Up is an app that works with your existing WordPress website and social media platforms and allows you to create and sell gift cards for your business. It's very simple for you to install, and it's a seamless experience for your customers. 
 
 First, we'll provide you with easy steps to add gift card purchase functionality to your current website. It's easy and fast to install. Easily design beautiful gift cards and certificates with your branding and logo. Access hundreds of unique, beautiful designs or create your own. Sell either products or services with specific pre-set amounts or customers can input a custom amount.
 
@@ -34,7 +34,7 @@ When a customer is ready to redeem their gift card, you can process the payment 
 
  - Beautiful gift cards with your branding
  - Fully automated email delivery of your gift cards, immediate or on a future date/time
- - Simple checkout installation in any wordpress page or post using our shortcode `[giftup]`
+ - Simple checkout installation in any WordPress page or post using our checkout block widget
  - Accept the gift cards you sell anywhere, from in-store via our mobile apps or your online cart 
  - Full management dashboard included 
 
@@ -51,10 +51,10 @@ When a customer is ready to redeem their gift card, you can process the payment 
 Install Gift Up via the [WordPress plugin store](https://wordpress.org/plugins/gift-up/).
 
 = Activation =
-1. After activating the the Gift Up wordpress plugin, create an account with [Gift Up](https://www.giftup.com/)
-2. In the plugin settings panel, [copy/paste your unique wordpress API key](https://giftup.app/installation/wordpress)
+1. After activating the Gift Up WordPress plugin, create an account with [Gift Up](https://www.giftup.com/)
+2. In the plugin settings panel, [copy/paste your unique WordPress API key](https://giftup.app/installation/wordpress)
 3. Visit the [Gift Up dashboard](https://giftup.app/) and complete the simple steps to configure your account (like how to get paid etc...).
-4. Drop our shortcode `[giftup]` into a page somewhere to install your checkout
+4. Add out checkout block into a page somewhere to install your checkout
 5. Enjoy gift card sales!
 
 == Frequently Asked Questions ==
@@ -122,11 +122,11 @@ Anything you like! We have thousands of customers using us selling all sorts of 
 
 = What does the plugin do to my website? =
 
-It enables a shortcode that you can use to install our drop-in checkout easily in to any page or post (`[giftup]`). [We have a demo of what it looks like here](https://www.giftup.com/demo).
+It enables a shortcode that you can use to install our drop-in checkout easily in to any page or post. [We have a demo of what it looks like here](https://www.giftup.com/demo).
 
 = Is WooCommerce required to use this plugin? =
 
-No. You can install this plugin and sell your gift cards through a page on your site using our `[giftup]` shortcode, which expands into our drop-in checkout on the page.
+No. You can install this plugin and sell your gift cards through a page on your site using our checkout block, which expands into our drop-in checkout on the page.
 
 If you do use WooCommere, you can have the gift cards you sell redeemable via your cart. 
 
@@ -141,8 +141,6 @@ If you do use WooCommere, you'll need to use WooCommerce v3.0 and above and we h
  - Country Based Restrictions for WooCommerce
  - AlgolPlus Advanced Dynamic Pricing
 
-Please note, that the new (and crucially experimental) feature named "WooCommerce Blocks" actively being developed by WooCommerce is incompatible with Gift Up for the time being as it required capability that is not _yet_ present.
-
  
 == Screenshots ==
 
@@ -155,6 +153,9 @@ Please note, that the new (and crucially experimental) feature named "WooCommerc
 7. Clear, accurate reporting that's available to export
 
 == Changelog ==
+
+= 3.1 =
+* Added checkout installlation Gutenberg block
 
 = 3.0.1 =
 * Bug fix release to include missing file in release

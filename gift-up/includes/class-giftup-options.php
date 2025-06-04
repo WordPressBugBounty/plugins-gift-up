@@ -2,6 +2,16 @@
 
 class GiftUp_Options
 {
+    public function __construct()
+    {
+        $args = array(
+			'type'         => 'string',
+			'show_in_rest' => true
+        );
+
+        register_setting( 'giftup', 'giftup_company_id', $args );
+    }
+
     public function has_api_key() {
         if ($this->get_api_key()) {
             return true;

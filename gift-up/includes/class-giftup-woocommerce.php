@@ -69,7 +69,7 @@ class GiftUp_WooCommerce {
     }
 
     public static function woocommerce_register_cart_block() {
-        require_once GIFTUP_ABSPATH . 'blocks/src/apply-block/giftup-apply-block-integration.php';
+        require_once GIFTUP_ABSPATH . 'blocks/build/apply-block/giftup-apply-block-integration.php';
         $response = register_block_type_from_metadata( GIFTUP_ABSPATH . 'blocks/build/apply-block/block.json' );
 
         add_action(

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Gift Up
  * Plugin URI: https://www.giftup.com/
- * Description: The simplest way to sell your own gift cards/certificates/vouchers from inside your WordPress website easily with no monthly fee. If you also use WooCommerce, the gift cards are redeemable in your website shopping cart.
- * Version: 3.0.1
+ * Description: The simplest way to sell your business’ gift cards online, all with no monthly fee. Gift cards are redeemable in-store via our app, and WooCommerce.
+ * Version: 3.1
  * Author: Gift Up
  * Text Domain: gift-up
  * Domain Path: /languages
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class GiftUp {
-	public $version = '3.0.1';
+	public $version = '3.1';
 
 	protected static $_instance = null;
 
@@ -130,7 +130,6 @@ class GiftUp {
 		// Declare Blocks compatibility.
 		add_action( 'before_woocommerce_init', array( $this, 'declare_blocks_compatibility' ) );
 
-		// Load translations hook.
 		add_action( 'init', array( $this, 'on_init' ) );
 	}
 
@@ -153,6 +152,7 @@ class GiftUp {
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-options.php';
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-settings.php';
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-diagnostics.php';
+		require_once GIFTUP_ABSPATH . 'blocks/build/checkout-block/giftup-checkout-block-integration.php';
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-woocommerce.php';
 	}
 
@@ -234,6 +234,10 @@ class GiftUp {
 			&& GiftUp()->options->get_woocommerce_enabled() ) {
 				GiftUp()->api->notify_connect_woocommerce();
 		}
+		
+		$response = register_block_type_from_metadata( GIFTUP_ABSPATH . 'blocks/build/checkout-block/block.json' );
+
+		GiftUp_Checkout_Block_Integration::instance()->initialize();
 	}
 
 	public function on_deactivation() {
