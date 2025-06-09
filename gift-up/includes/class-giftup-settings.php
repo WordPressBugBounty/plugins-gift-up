@@ -308,7 +308,8 @@ class GiftUp_Settings
     }
 
     public static function delete_woocommerce_webhook() {
-        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null ) {
+        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null
+             || GiftUp()->diagnostics->is_woocommerce_activated() == false ) {
             return;
         }
 
@@ -326,7 +327,8 @@ class GiftUp_Settings
     }
 
     private static function delete_all_woocommerce_giftcardcoupons() {
-        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null ) {
+        if ( GiftUp()->diagnostics->woocommerce_installed_version() == null
+             || GiftUp()->diagnostics->is_woocommerce_activated() == false ) {
             return;
         }
 

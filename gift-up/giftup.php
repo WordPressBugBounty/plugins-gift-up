@@ -3,7 +3,7 @@
  * Plugin Name: Gift Up
  * Plugin URI: https://www.giftup.com/
  * Description: The simplest way to sell your business’ gift cards online, all with no monthly fee. Gift cards are redeemable in-store via our app, and WooCommerce.
- * Version: 3.1
+ * Version: 3.1.1
  * Author: Gift Up
  * Text Domain: gift-up
  * Domain Path: /languages
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class GiftUp {
-	public $version = '3.1';
+	public $version = '3.1.1';
 
 	protected static $_instance = null;
 
@@ -110,9 +110,10 @@ class GiftUp {
 	}
 
 	public function initialize_plugin() {
+		$this->define_constants();
+
 		add_action( 'init', array( $this, 'load_translation' ) );
 		
-		$this->define_constants();
 		$this->includes();
 
 		// Instantiate global singletons.
@@ -120,9 +121,13 @@ class GiftUp {
 		$this->api = new GiftUp_API();
 		$this->diagnostics = new GiftUp_Diagnostics();
 		$this->cache = new GiftUp_Cache();
-		$this->woocommerce = new GiftUp_WooCommerce();
 
 		new GiftUp_Settings();
+
+		if ( $this->diagnostics->is_woocommerce_activated() ) {
+			require_once GIFTUP_ABSPATH . 'includes/class-giftup-woocommerce.php';
+			$this->woocommerce = new GiftUp_WooCommerce();
+		}
 
 		// Declare HPOS compatibility.
 		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
@@ -135,7 +140,7 @@ class GiftUp {
 
 	public function define_constants() {
 		$this->maybe_define_constant( 'GIFTUP_VERSION', $this->version );
-		$this->maybe_define_constant( 'GIFTUP_ABSPATH', trailingslashit( GiftUp()->get_plugin_basedirectory() ) );
+		$this->maybe_define_constant( 'GIFTUP_ABSPATH', trailingslashit( $this->get_plugin_basedirectory() ) );
 		$this->maybe_define_constant( 'GIFTUP_ACCEPTED_GIFTCARD_CODE', 'giftup_accepted_gift_card_code' );
 		$this->maybe_define_constant( 'GIFTUP_REQUESTED_GIFTCARD_CODE', 'giftup_requested_gift_card_code' );
 		$this->maybe_define_constant( 'GIFTUP_ORDER_META_CODE_KEY', '_giftup_code' );
@@ -153,7 +158,6 @@ class GiftUp {
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-settings.php';
 		require_once GIFTUP_ABSPATH . 'includes/class-giftup-diagnostics.php';
 		require_once GIFTUP_ABSPATH . 'blocks/build/checkout-block/giftup-checkout-block-integration.php';
-		require_once GIFTUP_ABSPATH . 'includes/class-giftup-woocommerce.php';
 	}
 
 	/**

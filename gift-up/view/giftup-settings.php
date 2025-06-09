@@ -42,7 +42,7 @@
         <p>You've successfully connected your <?php echo esc_html($giftup_company['name']) ?> Gift Up account to Wordpress, but you need to do a few more steps before you are selling gift cards ...</p>
         <ol>
           <li><a href="<?php echo esc_attr($giftup_dashboard_root) ?>/welcome" target="_blank" <?php if ( $giftup_company['canShowCheckout'] ): ?>style="text-decoration: line-through;"<?php endif; ?>>Complete the Gift Up account setup process</a><?php if ( $giftup_company['canShowCheckout'] ): ?> (completed)<?php endif; ?></li>
-          <li>Insert our shortcode <code>[giftup company="<?php echo esc_attr($giftup_company['id']) ?>"]</code> anywhere on a post or a page. This will render our checkout enabling your customers to buy your gift cards.</li>
+          <li>Add our checkout block (or shortcode<code>[giftup company="<?php echo esc_attr($giftup_company['id']) ?>"]</code>) anywhere on a post or a page. This will render our checkout enabling your customers to buy your gift cards.</li>
         </ol>
 
         <?php if ( $giftup_company['isCheckoutLive'] ): ?>

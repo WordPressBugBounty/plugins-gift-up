@@ -67,7 +67,7 @@ class GiftUp_Diagnostics {
                 return is_plugin_active( 'woocommerce/woocommerce.php' );
             }
         } catch (exception $e) {
-            return true; // assumed active
+            return class_exists( 'woocommerce' );
         }
 
         return true; // assumed active

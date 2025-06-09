@@ -1,12 +1,11 @@
 <?php
 
-use Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema;
-
 class GiftUp_WooCommerce {
 
     public function __construct()
     {
-        if ( GiftUp()->options->get_woocommerce_enabled() ) {
+        if ( GiftUp()->options->get_woocommerce_enabled()
+             && GiftUp()->diagnostics->is_woocommerce_activated() ) {
 		    require_once GIFTUP_ABSPATH . 'view/giftup-cart.php';
 
             $cart_adjustment_priority = 100;
@@ -56,97 +55,16 @@ class GiftUp_WooCommerce {
     
             add_action( 'wp_enqueue_scripts', array( __CLASS__, 'cart_scripts' ) );
 
-            add_action( 'init', array( __CLASS__, 'woocommerce_register_cart_block' ) );
+            if ( class_exists( 'Automattic\WooCommerce\Blocks\Package' ) && version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '7.0.0' ) > 0 ) {
+		        require_once GIFTUP_ABSPATH . 'includes/class-giftup-woocommerce-block.php';
+            }
         }
 
-        add_action( 'block_categories_all', array( __CLASS__, 'register_giftup_apply_block_category' ), 10, 2 );
-    
         // Rendering the gift card that has been used in an order in the admin order details page
         add_action( 'woocommerce_admin_order_totals_after_tax', array( __CLASS__, 'woocommerce_admin_order_totals_after_tax' ) );
     
         // Rendering the gift card that has been used in an order in the customers view post payment & emails
         add_filter( 'woocommerce_get_order_item_totals', array( __CLASS__, 'woocommerce_get_order_item_totals' ), 30, 3 );
-    }
-
-    public static function woocommerce_register_cart_block() {
-        require_once GIFTUP_ABSPATH . 'blocks/build/apply-block/giftup-apply-block-integration.php';
-        $response = register_block_type_from_metadata( GIFTUP_ABSPATH . 'blocks/build/apply-block/block.json' );
-
-        add_action(
-            'woocommerce_blocks_cart_block_registration',
-            function ( $integration_registry ) {
-                $integration_registry->register( GiftUp_Apply_Block_Integration::instance() );
-            }
-        );
-
-        add_action(
-            'woocommerce_blocks_checkout_block_registration',
-            function ( $integration_registry ) {
-                $integration_registry->register( GiftUp_Apply_Block_Integration::instance() );
-            }
-        );
-
-        if (function_exists('woocommerce_store_api_register_update_callback')) {
-            woocommerce_store_api_register_update_callback(
-                [
-                    'namespace' => 'giftup-apply-code',
-                    'callback'  => function ( $data ) {
-                        $giftCardCode = $data['giftCardCode'];
-
-                        GiftUp()->woocommerce->apply_gift_card_to_cart( WC()->cart, $giftCardCode );
-                    }
-                ]
-            );
-
-            woocommerce_store_api_register_update_callback(
-                [
-                    'namespace' => 'giftup-remove-code',
-                    'callback' => function ($data) {
-                        GiftUp()->woocommerce->apply_gift_card_to_cart( WC()->cart, '' );
-                    }
-                ]
-            );
-        }
-
-        if (function_exists('woocommerce_store_api_register_endpoint_data')) {
-            woocommerce_store_api_register_endpoint_data(
-                array(
-                    'endpoint' => CartSchema::IDENTIFIER,
-                    'namespace' => 'giftup-apply-block',
-                    'data_callback' => function() {
-
-                        $giftcard_not_found = strlen(GiftUp()->cache->get_requested_gift_card_code()) > 0
-                                                && GiftUp()->cache->get_accepted_gift_card_code() == null;
-                        $giftcard_code = GiftUp()->cache->get_accepted_gift_card_code();
-                        $giftcard_applied_balance = GiftUp()->cache->applied_gift_card_balance;
-                        $giftcard_balance = GiftUp()->api->get_gift_card_balance($giftcard_code);
-                
-                        return [
-                            'giftcard_not_found' => $giftcard_not_found,
-                            'giftcard_code' => $giftcard_code,
-                            'giftcard_balance' => html_entity_decode(strip_tags(wc_price($giftcard_balance))),
-                            'giftcard_applied_balance' => $giftcard_applied_balance
-                        ];
-                    },
-                    'schema_type' => ARRAY_A
-                )
-            );
-        }
-    }
-
-    /**
-     * Registers the slug as a block category with WordPress.
-     */
-    public static function register_giftup_apply_block_category( $categories ) {
-        return array_merge(
-            $categories,
-            [
-                [
-                    'slug'  => 'giftup-block',
-                    'title' => 'Gift Up Block',
-                ],
-            ]
-        );
     }
 
     private static function apply_gift_card_to_cart_impl( $cart, $code ) {
