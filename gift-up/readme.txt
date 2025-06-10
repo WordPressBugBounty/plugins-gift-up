@@ -5,7 +5,7 @@ Tags: gift cards, gift certificates, gift vouchers, gift certificate, woocommerc
 Requires at least: 3.0.1
 Requires PHP: 5.6
 Tested up to: 6.8.1
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Plugin URI: https://en-gb.wordpress.org/plugins/gift-up/
@@ -153,6 +153,9 @@ If you do use WooCommere, you'll need to use WooCommerce v3.0 and above and we h
 7. Clear, accurate reporting that's available to export
 
 == Changelog ==
+
+= 3.1.3 =
+* Correctly cache bust assets
 
 = 3.1.2 =
 * Ensure old shortcode is center aligned as previously done

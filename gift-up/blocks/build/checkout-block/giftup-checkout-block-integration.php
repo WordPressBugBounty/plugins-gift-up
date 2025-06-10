@@ -59,14 +59,24 @@ class GiftUp_Checkout_Block_Integration {
         $script_path = '/blocks/build/checkout-block/checkout.js';
         $script_url  = plugins_url( 'gift-up' ) . $script_path;
 
-        wp_register_script("giftup-checkout-external", $script_url, [], "", array(
-			'strategy' => 'defer'
-		) );
+        wp_register_script(
+			"giftup-checkout-external",
+			$script_url,
+			[],
+			$this->get_file_version( $script_path ),
+			array(
+				'strategy' => 'defer'
+			) );
 
         $style_path = '/blocks/build/checkout-block/checkout.css';
         $style_url  = plugins_url( 'gift-up' ) . $style_path;
 
-        wp_register_style("giftup-checkout-external", $style_url, [], "");
+        wp_register_style(
+			"giftup-checkout-external",
+			$style_url,
+			[],
+			$this->get_file_version( $style_path )
+		);
 	}
 	
 	/**
