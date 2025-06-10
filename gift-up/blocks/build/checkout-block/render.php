@@ -18,7 +18,7 @@ $companyId = str_replace( "‚", "", $companyId );
 
 if ( strlen($companyId) == 36 ) {
     ?><div <?php echo get_block_wrapper_attributes(); ?>>
-        <div class="gift-up-target <?php echo esc_attr($attributes['alignment'] ?? "") ?>" 
+        <div class="gift-up-target gift-up-block <?php echo esc_attr($attributes['alignment'] ?? "") ?>" 
             data-site-id="<?php echo esc_attr($companyId) ?>" 
             data-product-id="<?php echo esc_attr($attributes['product'] ?? "") ?>"
             data-group-id="<?php echo esc_attr($attributes['group'] ?? "") ?>"

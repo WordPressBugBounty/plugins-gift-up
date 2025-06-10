@@ -16,8 +16,8 @@
     margin-left: auto;
 }
 
-.gift-up-target {
-    max-width: 32rem;
+.gift-up-target.gift-up-block {
+    max-width: 512px;
 }
 
 .gift-up-target.gift-up-checkout-editor {
