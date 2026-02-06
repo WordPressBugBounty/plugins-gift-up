@@ -4,13 +4,13 @@ Donate link: https://www.giftup.com/
 Tags: gift cards, gift certificates, gift vouchers, gift certificate, woocommerce
 Requires at least: 3.0.1
 Requires PHP: 5.6
-Tested up to: 6.8.1
-Stable tag: 3.1.3
+Tested up to: 6.9
+Stable tag: 3.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Plugin URI: https://en-gb.wordpress.org/plugins/gift-up/
 WC requires at least: 3.2.0
-WC tested up to: 9.9.3
+WC tested up to: 10.2.2
 
 The simplest way to sell gift cards online. Sell your own gift cards, gift certificates and gift vouchers from inside your WordPress website easily with no monthly fee. 
 If you also use WooCommerce, then your customers can redeem their gift cards in your store's shopping cart.
@@ -153,6 +153,15 @@ If you do use WooCommere, you'll need to use WooCommerce v3.0 and above and we h
 7. Clear, accurate reporting that's available to export
 
 == Changelog ==
+
+= 3.1.7 =
+* Fixed release tag
+
+= 3.1.5 =
+* Fix block property values rending incorect values. WP 6.9 compatibility
+
+= 3.1.4 =
+* Fix uninstallation. WP 6.8.3 compatibility
 
 = 3.1.3 =
 * Correctly cache bust assets

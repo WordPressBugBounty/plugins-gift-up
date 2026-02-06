@@ -92,7 +92,7 @@ class GiftUp_Options
 
     public function disconnect() {
         GiftUp()->api->notify_disconnect_woocommerce();
-        GiftUp_Settings::delete_woocommerce_webhook();
+        GiftUp()->settings->delete_woocommerce_webhook();
 
         delete_option( "giftup_company_id" );
         delete_option( "giftup_api_key" );

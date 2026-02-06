@@ -3,7 +3,7 @@
  * Plugin Name: Gift Up
  * Plugin URI: https://www.giftup.com/
  * Description: The simplest way to sell your business’ gift cards online, all with no monthly fee. Gift cards are redeemable in-store via our app, and WooCommerce.
- * Version: 3.1.3
+ * Version: 3.1.7
  * Author: Gift Up
  * Text Domain: gift-up
  * Domain Path: /languages
@@ -13,7 +13,7 @@
  * Developer URI: https://www.giftup.com/
  * Author URI: https://www.giftup.com/
  * WC requires at least: 3.2.0
- * WC tested up to: 9.9.3
+ * WC tested up to: 10.2.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,29 +30,26 @@ class GiftUp {
 
 	/**
 	 * Gift Up Options.
-	 *
-	 * @var GiftUp_Options
 	 */
 	public $options;
 
 	/**
 	 * Gift Up API.
-	 *
-	 * @var GiftUp_API
 	 */
 	public $api;
 
 	/**
 	 * Gift Up Cache.
-	 *
-	 * @var GiftUp_Cache
 	 */
 	public $cache;
 
 	/**
+	 * Gift Up Settings.
+	 */
+	public $settings;
+
+	/**
 	 * Gift Up Diagnostics.
-	 *
-	 * @var GiftUp_Diagnostics
 	 */
 	public $diagnostics;
 
@@ -121,8 +118,7 @@ class GiftUp {
 		$this->api = new GiftUp_API();
 		$this->diagnostics = new GiftUp_Diagnostics();
 		$this->cache = new GiftUp_Cache();
-
-		new GiftUp_Settings();
+		$this->settings = new GiftUp_Settings();
 
 		if ( $this->diagnostics->is_woocommerce_activated() ) {
 			require_once GIFTUP_ABSPATH . 'includes/class-giftup-woocommerce.php';
@@ -245,10 +241,13 @@ class GiftUp {
 	}
 
 	public function on_deactivation() {
-		if ( $this->options->has_api_key()
-			&& $this->options->get_woocommerce_operating_mode() == GIFTUP_WOO_MODE_API
-			&& $this->options->get_woocommerce_enabled() ) {
-				GiftUp()->api->notify_disconnect_woocommerce();
+		if ( $this->options->get_woocommerce_enabled() ) {
+        	GiftUp()->settings->delete_woocommerce_webhook();
+
+			if ( $this->options->has_api_key()
+				&& $this->options->get_woocommerce_operating_mode() == GIFTUP_WOO_MODE_API) {
+					GiftUp()->api->notify_disconnect_woocommerce();
+			}
 		}
 	}
 }
@@ -266,7 +265,14 @@ GiftUp();
 
 function giftup_on_uninstall() {
 	remove_shortcode( 'giftup' );
-	$this->options->disconnect();
+
+	delete_option( "giftup_company_id" );
+	delete_option( "giftup_api_key" );
+	delete_option( "giftup_version" );
+	delete_option( "giftup_woocommerce_operating_mode" );
+	delete_option( "giftup_woocommerce_enabled" );
+	delete_option( "giftup_woocommerce_apply_to_shipping" );
+	delete_option( "giftup_woocommerce_apply_to_taxes" );
 }
 
 register_uninstall_hook( __FILE__, 'giftup_on_uninstall' );
