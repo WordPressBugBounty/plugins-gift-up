@@ -293,29 +293,12 @@ class GiftUp_API
 
     public function api_root()
     {
-        if (isset( $_COOKIE['giftup_api_root'] )) {
-            return $_COOKIE['giftup_api_root'];
-        }
-
         return 'https://api.giftup.app';
     }
 
     public function dashboard_root()
     {
-        if (isset( $_COOKIE['giftup_dashboard_root'] )) {
-            return $_COOKIE['giftup_dashboard_root'];
-        }
-
         return 'https://giftup.app';
-    }
-
-    public function different_roots_enabled()
-    {
-        if (!empty( $_COOKIE['giftup_dashboard_root'] ) or !empty( $_COOKIE['giftup_api_root'] )) {
-            return true;
-        }
-
-        return false;
     }
     
     /**

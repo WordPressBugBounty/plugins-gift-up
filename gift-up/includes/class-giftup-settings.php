@@ -68,10 +68,6 @@ class GiftUp_Settings
                 && GiftUp()->diagnostics->woocommerce_installed_version() != null) {
             echo '<div class="notice notice-warning is-dismissible" id="giftup-nag"><p>' . __( 'Please <a href="/wp-admin/options-general.php?page=giftup-settings">upgrade your Gift Up + WooCommerce connection</a> to improve the customer redemption experience in your cart' ) . '</p></div>';
         }
-
-        if ( GiftUp()->api->different_roots_enabled() ) {
-            echo '<div class="notice notice-warning" id="giftup-nag-2"><p>You are pointing to a different Gift Up environment.</p></div>';
-        }
     }
 
     /**
