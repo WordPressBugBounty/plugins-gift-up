@@ -331,7 +331,7 @@ class GiftUp_Diagnostics {
     }
 
     private static function add_diagnostics( $tls_1_2_response_body ) {
-        $message = "<br>--";
+        $message = "<br>DEBUG information<br>--";
 
         try {
             if (!function_exists('curl_version')) {

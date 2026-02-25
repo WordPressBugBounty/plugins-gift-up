@@ -123,7 +123,7 @@ class GiftUp_Settings
             $woocommerce_uses_api_direct = $woocommerce_is_connected && $woocommerce_connection_status["usesApiDirect"] == true;
 
             $woocommerce_currency = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : "unknown";
-            $giftup_currency = $giftup_company["currency"];
+            $giftup_currency = $giftup_company ? $giftup_company["currency"] : "unknown";
             $woocommerce_can_enable = strtolower($woocommerce_currency) == strtolower($giftup_currency);
 
             $woocommerce_upgrade_required = $woocommerce_is_connected && $woocommerce_uses_api_direct == false;

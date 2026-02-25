@@ -22,9 +22,28 @@
   
   <?php if ( strlen($giftup_company_id) > 0 ): ?>
 
-    <h1 class="giftup-settings-top-header">Gift Up account connected</h1>
+    <?php if ( !$giftup_company ): ?>
 
-    <?php if ( $giftup_company['onboardingCompleted'] ): ?>
+      <div class="notice notice-error" style="margin-top: 1rem">
+        <h3 style="color: #dc3232">Gift Up account disconnected</h1>
+        <p>If looks like you have revoked your Gift Up API key inside of Gift Up and this plugin can no longer read data from your Gift Up account</p>
+        <ol>
+          <li>Login to your Gift Up account and <a href="<?php echo esc_attr($giftup_dashboard_root) ?>/installation/wordpress" target="_blank">get your API key</a></li>
+          <li>
+            <p>Copy &amp; paste the provided Gift Up API key below:</p>
+            <form class="form-table" name="giftup_form" id="giftup_general_settings_form" method="POST" action="<?php echo esc_attr($_SERVER['REQUEST_URI']); ?>">
+              <?php wp_nonce_field('giftup_api_key','giftup_api_key_nonce'); ?>
+
+              <textarea type="text" id="giftup_api_key" name="giftup_api_key" class="giftup-settings-key" rows="5" cols="40" placeholder="API Key"><?php echo ( $giftup_api_key ); ?></textarea>
+              <p><input class="button button-primary" type="submit" name="Submit" value="<?php _e('Re-connect to Gift Up') ?>" /></p>
+            </form>
+          </li>
+        </ol>
+      </div>
+
+    <?php elseif ( $giftup_company['onboardingCompleted'] ): ?>
+
+      <h1 class="giftup-settings-top-header">Gift Up account connected</h1>
 
       <p style="color: #46b450">
         <span class="dashicons dashicons-yes"></span> 
@@ -37,6 +56,8 @@
       </p>
 
     <?php else: ?>
+
+      <h1 class="giftup-settings-top-header">Gift Up account connected</h1>
 
       <div class="notice notice-warning" style="margin-top: 1rem">
         <p>You've successfully connected your <?php echo esc_html($giftup_company['name']) ?> Gift Up account to Wordpress, but you need to do a few more steps before you are selling gift cards ...</p>

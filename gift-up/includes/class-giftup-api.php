@@ -208,43 +208,6 @@ class GiftUp_API
     }
     
     /**
-    * Add credit to a gift card
-    *
-    * @return boolean representing whether the add credit worked
-    */
-    public function add_credit_to_gift_card( $code, $value, $order_id ) {
-        $giftcard = $this->get_gift_card( $code );
-    
-        if ($giftcard == NULL) {
-            return false;
-        }
-        
-        $balance = $this->get_gift_card_balance( $code );
-
-        if ( $balance < $value ) {
-            return false;
-        }
-
-        $rounded_value = $value;
-        try {
-            $rounded_value = round($value, 2, PHP_ROUND_HALF_DOWN);
-        } catch(exception $e) {}
-
-        if ($order_id === NULL || strlen($order_id) == 0) {
-            $order_id = "(unknown)";
-        }
-
-        $payload = [
-            'amount' => $rounded_value,
-            'reason' => "WooCommerce order cancelled " . $order_id
-        ];
-
-        $response = $this->invoke( '/gift-cards/' . rawurlencode( $code ) . '/add-credit', 'POST', $payload );
-        
-        return $response->success;
-    }
-    
-    /**
     * Get the company name
     *
     * @return  string
