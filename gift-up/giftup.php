@@ -3,7 +3,7 @@
  * Plugin Name: Gift Up
  * Plugin URI: https://www.giftup.com/
  * Description: The simplest way to sell your business’ gift cards online, all with no monthly fee. Gift cards are redeemable in-store via our app, and WooCommerce.
- * Version: 3.2.1
+ * Version: 3.2.2
  * Author: Gift Up
  * Text Domain: gift-up
  * Domain Path: /languages
@@ -13,7 +13,7 @@
  * Developer URI: https://www.giftup.com/
  * Author URI: https://www.giftup.com/
  * WC requires at least: 3.2.0
- * WC tested up to: 10.8.0
+ * WC tested up to: 11.0.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class GiftUp {
-	public $version = '3.2.1';
+	public $version = '3.2.2';
 
 	protected static $_instance = null;
 
