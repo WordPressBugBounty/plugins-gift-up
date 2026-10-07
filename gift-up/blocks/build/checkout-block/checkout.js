@@ -1,1 +1,1 @@
-!function(t,e,n,i,p,s,c){t[p]=t[p]||function(){(t[p].q=t[p].q||[]).push(arguments)},(s=e.createElement(n)).async=1,s.src="https://cdn.giftup.app/dist/gift-up.js",(c=e.getElementsByTagName(n)[0]).parentNode.insertBefore(s,c)}(window,document,"script",0,"giftup");
+!function(t,e,n,s,c,i,r){t[c]=t[c]||function(){(t[c].q=t[c].q||[]).push(arguments)},(i=e.createElement(n)).async=1,i.src="https://cdn.yourgift.cards/dist/gift-up.js",(r=e.getElementsByTagName(n)[0]).parentNode.insertBefore(i,r)}(window,document,"script",0,"giftup");

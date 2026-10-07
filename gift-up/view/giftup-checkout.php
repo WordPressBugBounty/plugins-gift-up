@@ -72,11 +72,11 @@ function giftup_shortcode( $atts ) {
             p.src = t;
             s = i.getElementsByTagName(f)[0];
             s.parentNode.insertBefore(p, s);
-        })(window, document, 'script', 'https://cdn.giftup.app/dist/gift-up.js', 'giftup');
+        })(window, document, 'script', 'https://cdn.yourgift.cards/dist/gift-up.js', 'giftup');
         </script><?php
         
         return ob_get_clean();
     }
     
-    return "Notice to site admin: Please connect your Gift Up! account to WordPress in Settings / Gift Up!";
+    return "Notice to site admin: Please connect your Gift Up account to WordPress in Settings / Gift Up";
 }
